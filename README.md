@@ -5,6 +5,7 @@ setOptimizer
 Takes a number of arrays (organized in columns) and separates the ones that are always together into separate groups.
 
 Input:
+
 | Group1 | Group2 | Group3 | Group4 | Group5 |
 |--------|--------|--------|--------|--------|
 | Item1  | Item1  | Item1  | Item2  | Item4  |
