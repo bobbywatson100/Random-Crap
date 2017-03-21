@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8"> 
+<head>
+	<title>Set Optimizer</title>
+</head>
+<script type="text/javascript">
+var inputSets = [];
+var outputSets = [];
+
+function addSetToInput() {
+
+	var enteredText = document.getElementById("setInput").value;
+	
+	// Split lines at line feeds
+	var textLines = enteredText.toUpperCase().split("\n");
+	
+	// Each value (tab-separated) is an entry in a different group
+	for( var i = 0; i < textLines.length; i++) {
+		// Split the line into separate values
+		valuesList = textLines[i].split("\t");
+		
+		// Append each non-empty value to the corresponding array
+		for(var j = 0; j < valuesList.length; j++) {
+			var value = valuesList[j].trim();
+			
+			if (value != "") {
+				if (inputSets[j] === undefined) 
+					inputSets[j] = [];
+				inputSets[j].push(value);
+			}
+		}
+	}
+	
+	document.getElementById("setInput").value = "";
+}
+
+function optimizeSets() {
+
+	// Sort all arrays, and make sure each value is unique
+	var tempArrays = inputSets;
+	
+	for(var i = 0; i < tempArrays.length; i++) {
+		tempArrays[i] = getUniqueValuesList(tempArrays[i]);
+	}
+	
+	// Build hash table of possible values and where they come from
+	var valuesHash = [];
+
+	for (var i = 0; i < inputSets.length; i++) {
+		var tempArray = inputSets[i];
+		for (var j=0; j < tempArray.length; j++) {
+		
+		    if (valuesHash[tempArray[j]] === undefined) {
+				valuesHash[tempArray[j]] = String(i);
+			}
+			else {
+				valuesHash[tempArray[j]] = valuesHash[tempArray[j]] + '-' + String(i);
+			}
+		}
+	}
+	
+	outputSets = [];
+	
+	// Match all lines of the hash that match
+	for (var hashKey in valuesHash) {
+		var newGroup = [];
+		newGroup.push(hashKey);
+		
+		for (var hashKey2 in valuesHash) {
+			if ((hashKey != hashKey2) && (valuesHash[hashKey] == valuesHash[hashKey2]))
+			{
+				newGroup.push(hashKey2);
+				delete valuesHash[hashKey2];
+			}
+		}
+		
+		delete valuesHash[hashKey];
+		outputSets.push(newGroup);
+	}
+	
+	// Update the output
+	var outputDiv = document.getElementById("setOutput");
+	
+	var newHTML = "";
+	
+	for (var i = 0; i < outputSets.length; i ++) {
+		newHTML += "<p>" + outputSets[i].join() + "</p>";
+	
+	}
+	
+	outputDiv.innerHTML = newHTML;
+	
+	return outputSets;
+	
+}
+
+function getUniqueValuesList(inputArray) {
+
+	// Sort values
+	inputArray.sort();
+		
+	// Remove duplicates
+	var i = 0;
+	while( i < inputArray.length) {
+		
+		// If the next value is identical to the current value, remove it
+		if (inputArray[i] == inputArray[i+1]) {
+			inputArray.splice(i+1, 1);
+		}
+		else {
+			// If the current value and the next one are different, move to the next
+			i++;
+		}
+	}
+	
+	return inputArray;
+}
+
+function reset() {
+	inputSets = [];
+	
+	// Reset the output
+	document.getElementById("setOutput").innerHTML = "";
+
+}
+
+</script>
+<body>
+Enter company names (tab-separated values, one group per line):<br>
+<textarea rows="10" cols="50" id="setInput">
+</textarea>
+<p></p><button onClick="addSetToInput();">Add to input</button>
+<button onClick="optimizeSets();">Optimize sets</button></p>
+
+<button onClick="reset();">Reset</button>
+
+<div id="setOutput"></div>
+</body>
+</html>
