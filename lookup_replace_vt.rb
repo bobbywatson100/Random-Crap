@@ -66,9 +66,8 @@ Dir.glob(directory) do |item|
 			
 		end # index == 0
 
-# Output the updated content to a new file
-	newFileName = item + ".new.dat"
-#	File.write(newFileName, outputFile)
+# Output the updated content to the file
+	newFileName = File.dirname(item) + "\\output\\" + File.basename(item)
 	outputFile = File.open(newFileName, "wt", encoding:"UTF-16LE")
 
 	outputArray.each_with_index do |line, index|
