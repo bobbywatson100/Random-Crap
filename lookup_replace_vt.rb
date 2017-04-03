@@ -58,7 +58,13 @@ Dir.glob(directory) do |item|
 				values[2] = valuesHash[valueToLookup]
 				
 # Append the new line to the outputFile
-				newLine = "#{values[0]}\t#{values[1]}\t#{values[2]}\t#{values[3]}".to_s
+				values.each_with_index do |word, index|
+					if index == 0
+						newLine = word.to_s
+					else
+						newLine += "\t" + word.to_s
+					end
+				end
 				outputArray.push(newLine)
 			else
 				puts "line #{index} does not have 4 elements and will be skipped" 
